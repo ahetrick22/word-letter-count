@@ -1,0 +1,91 @@
+swagger: "2.0"
+info:
+  description: "Server for coding challenge"
+  version: "1.0.0"
+  title: "Coding Challenge"
+  contact:
+    email: "ahetrick22@gmail.com"
+paths:
+  /word_count_per_sentence:
+    post:
+      tags:
+      - "Word Count Per Sentence"
+      summary: "Given a paragraph, provides text & word count in each sentence."
+      description: "Returns individual sentences along with a word count for the sentence. A sentence is any grouping of letters and words ending in a period, question mark or exclamation point. A word is text delimited by spaces."
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "paragraph"
+        description: "Paragraph to break down into sentences with their word count. At least 2 sentences are required to get a response."
+        required: true
+        schema:
+          $ref: "#/definitions/Paragraph"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: object
+            $ref: "#/definitions/Sentences"
+        400: 
+          description: "Bad request - paragraph in body is required."
+  /total_letter_count:
+    post:
+      tags:
+      - "Total Letter Count"
+      summary: "Given a text string, returns the count of each case-insensitive letter in that string"
+      description: "For each case-insensitive letter, this returns the number of times that letter appears in the entire text as JSON with the capital letters as keys and the count as values."
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "text"
+        description: "Text string in which to count letters."
+        required: true
+        schema:
+          $ref: "#/definitions/Text"
+      responses:
+         200:
+          description: "Successful operation"
+          schema:
+            type: object
+            $ref: "#/definitions/LetterCount"
+         400: 
+          description: "Bad request - paragraph in body is required."
+definitions:
+  Paragraph:
+    type: "object"
+    properties:
+      paragraph:
+        type: "string"
+        description: "Paragraph to assess, must have at least 2 sentences"
+  Sentences:
+    type: "object"
+    properties:
+      sentences:
+        type: "array"
+        items: 
+          type: object
+          properties: 
+            text:
+              type: string
+              description: "The text of a single sentence"
+            wordCount:
+              type: "integer"
+              description: "Count of words in that sentence"
+  Text:
+    type: "object"
+    properties:
+      text:
+        type: "string"
+        description: "Text to assess"
+  LetterCount:
+    type: "object"
+    properties:
+      A:
+        type: "integer"
+        description: "The count of case-insensitive As in the assessed text. The LetterCount object will contain 26 properties - one for each uppercase letter, and each will have a value of that letter's count in the text."
