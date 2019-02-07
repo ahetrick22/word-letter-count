@@ -15,7 +15,7 @@ describe('POST /word_count_per_sentence', () => {
       done();
   })
 
-  it('should have a key paragraph in the body of the request', done => {
+  it('should have paragraph as a key in the body of the request', done => {
     chai.request(server)
       .post('/word_count_per_sentence')
       .send({NotAParagraph: "blah blah blah"})
@@ -83,3 +83,68 @@ describe('POST /word_count_per_sentence', () => {
   }) 
 
 })
+
+describe('POST /total_letter_count', () => {
+  it('should require a body in the request', done => {
+    chai.request(server)
+      .post('/total_letter_count')
+      .end((err, res) => {
+        res.should.have.status(400);
+        res.body.should.be.empty;
+      })
+      done();
+  })
+  it('should have text as a key in the body of the request', done => {
+    chai.request(server)
+      .post('/total_letter_count')
+      .send({NotText: "blah blah blah"})
+      .end((err, res) => {
+        res.should.have.status(400);
+        res.body.should.be.empty;
+      })
+      done();
+  })
+
+  it('should return the correct count of each alphabet letter of a given text', done => {
+    chai.request(server)
+    .post('/total_letter_count')
+    .send({text: "ABCDABCD"})
+    .end((err, res) => {
+      res.should.have.status(200);
+      res.body.should.be.an('object');
+      res.body["A"].should.eql(2);
+      res.body["Z"].should.eql(0);
+      Object.keys(res.body).length.should.eql(26);
+    })
+    done();
+  })
+
+  it('should handle non-alphabet characters', done => {
+    chai.request(server)
+    .post('/total_letter_count')
+    .send({text: "ABCD  325798346&&&//. ABCD!!!!!!!   "})
+    .end((err, res) => {
+      res.should.have.status(200);
+      res.body.should.be.an('object');
+      res.body["A"].should.eql(2);
+      res.body["Z"].should.eql(0);
+      Object.keys(res.body).length.should.eql(26);
+    })
+    done();
+  })
+
+  it('should handle lowercase characters and count them the same way as uppercase', done => {
+    chai.request(server)
+    .post('/total_letter_count')
+    .send({text: "ABCDabcd"})
+    .end((err, res) => {
+      res.should.have.status(200);
+      res.body.should.be.an('object');
+      res.body["A"].should.eql(2);
+      res.body["Z"].should.eql(0);
+      Object.keys(res.body).length.should.eql(26);
+    })
+    done();
+  })
+
+});

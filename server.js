@@ -60,7 +60,7 @@ app.post('/word_count_per_sentence', (req, res) => {
       } else {
         //send the result
         res.setHeader("Content-type", "application/json");
-        res.send(JSON.stringify(returnObj));
+        res.json(returnObj);
       }
     } else {
       //handle if no paragraph was sent
@@ -98,7 +98,7 @@ app.post('/total_letter_count', (req, res) => {
         returnObj[currentCharacter.toUpperCase()]++;
       };
     };
-    res.send(JSON.stringify(returnObj));
+    res.json(returnObj);
     } else {
     //handle if no text was sent
     res.status(400).send('Bad request - must send a text key in the body');
