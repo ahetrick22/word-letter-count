@@ -81,7 +81,6 @@ describe('POST /word_count_per_sentence', () => {
     })
     done(); 
   }) 
-
 })
 
 describe('POST /total_letter_count', () => {
@@ -146,5 +145,4 @@ describe('POST /total_letter_count', () => {
     })
     done();
   })
-
 });

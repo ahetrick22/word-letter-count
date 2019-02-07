@@ -22,8 +22,7 @@ app.post('/word_count_per_sentence', (req, res) => {
       //remove whitespace on either side 
       paragraph = paragraph.trim();
       //we only want to have to iterate over the entire string once, 
-      //so identify both the spaces and sentence endings in one place and 
-      //then save it in a return obj
+      //so identify both the spaces and sentence endings in one place and then save it in a return obj
       const returnObj = {
         sentences: []
       };
@@ -54,12 +53,11 @@ app.post('/word_count_per_sentence', (req, res) => {
             };
         };
       };
-      //make sure there is more than one sentence in the paragraph, since that was a requirement
+      //make sure there is more than one sentence in the paragraph
       if (returnObj.sentences.length < 2) {
         res.status(400).send('Bad request - your paragraph must have 2 or more sentences to be processed');
       } else {
         //send the result
-        res.setHeader("Content-type", "application/json");
         res.json(returnObj);
       }
     } else {
@@ -72,41 +70,42 @@ app.post('/word_count_per_sentence', (req, res) => {
   }
 })
 
-//For each case-insensitive letter, return the number of times that letter appears in the entire text. 
-//E.g. the text contains 50 As, 40 Bs, etc.
-//accepts and returns JSON
+//For each case-insensitive letter in a string(sent as JSON with key - body, value - the string to assess), 
+//returns the number of times that letter appears in the entire text. 
+//returns JSON with a key for each letter, even if that letter shows up 0 times.
 app.post('/total_letter_count', (req, res) => {
  //make sure there's a body sent
- if (req.body) {
-  let { text } = req.body;
-  //make sure the request has sent text
-  if (text) {
-    //remove whitespace on either side 
-    text = text.trim();
-    //build the array of alphabet characters to test against
-    const alphabet = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
-    const returnObj = {};
-    //assign each character to the object we're returning and set the count to 0
-    alphabet.forEach(letter => returnObj[letter] = 0);
-    //check each character
-    for (let c = 0; c < text.length; c++) {
-      let currentCharacter = text[c];
-      //check for the uppercase character match first, 
-      //since it won't need to do the second check if the first passes
-      //if it's there, add a count to the matching position in the return object
-      if (alphabet.includes(currentCharacter) || alphabet.includes(currentCharacter.toUpperCase())) {
-        returnObj[currentCharacter.toUpperCase()]++;
+  if (req.body) {
+    let { text } = req.body;
+    //make sure the request has sent text
+    if (text) {
+      //remove whitespace on either side 
+      text = text.trim();
+      //build the array of alphabet characters to test against
+      const alphabet = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
+      const returnObj = {};
+      //assign each character to the object we're returning and set the count to 0
+      alphabet.forEach(letter => returnObj[letter] = 0);
+      //check each character
+      for (let c = 0; c < text.length; c++) {
+        let currentCharacter = text[c];
+        //check for the uppercase character match first, 
+        //since it won't need to do the second check if the first passes
+        //if it's there, add a count to the matching position in the return object
+        if (alphabet.includes(currentCharacter) || alphabet.includes(currentCharacter.toUpperCase())) {
+          returnObj[currentCharacter.toUpperCase()]++;
+        };
       };
-    };
-    res.json(returnObj);
+      res.json(returnObj);
     } else {
-    //handle if no text was sent
-    res.status(400).send('Bad request - must send a text key in the body');
-  }
-} else {
+      //handle if no text was sent
+      res.status(400).send('Bad request - must send a text key in the body');
+      }
+  } else {
   //handle if no body was sent
   res.status(400).send('Body is required');
-}})
+  }
+})
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
