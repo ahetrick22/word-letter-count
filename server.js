@@ -88,7 +88,7 @@ app.post('/total_letter_count', (req, res) => {
         let currentCharacter = text[c].toUpperCase();
         //if we can lookup the character in the return object, then it's an alphabet char and we add it
         if (returnObj[currentCharacter] >= 0) {
-          returnObj[currentCharacter.toUpperCase()]++;
+          returnObj[currentCharacter]++;
         };
       };
       res.json(returnObj);
