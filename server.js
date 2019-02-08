@@ -17,12 +17,10 @@ app.post('/word_count_per_sentence', (req, res) => {
   //make sure there's a body sent
   if (req.body) {
     let { paragraph } = req.body;
-    //make sure the request has sent a paragraph
+    //make sure the request has sent a paragraph and get rid of whitespace on either side
     if (paragraph) {
-      //remove whitespace on either side 
       paragraph = paragraph.trim();
-      //we only want to have to iterate over the entire string once, 
-      //so identify both the spaces and sentence endings in one place and then save it in a return obj
+      //identify both the spaces and sentence endings in one place and then save it in a return obj
       const returnObj = {
         sentences: []
       };
@@ -62,7 +60,7 @@ app.post('/word_count_per_sentence', (req, res) => {
       }
     } else {
       //handle if no paragraph was sent
-      res.status(400).send('Bad request - must send a paragraph in the body');
+      res.status(400).send('Bad request - must send a JSON body with a key of "paragraph"');
     }
   } else {
     //handle if no body was sent
@@ -77,29 +75,26 @@ app.post('/total_letter_count', (req, res) => {
  //make sure there's a body sent
   if (req.body) {
     let { text } = req.body;
-    //make sure the request has sent text
+    //make sure the request has sent text and get rid of whitespace on either side
     if (text) {
-      //remove whitespace on either side 
       text = text.trim();
       //build the array of alphabet characters to test against
       const alphabet = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
       const returnObj = {};
       //assign each character to the object we're returning and set the count to 0
       alphabet.forEach(letter => returnObj[letter] = 0);
-      //check each character
+      //check each character in the text string
       for (let c = 0; c < text.length; c++) {
-        let currentCharacter = text[c];
-        //check for the uppercase character match first, 
-        //since it won't need to do the second check if the first passes
-        //if it's there, add a count to the matching position in the return object
-        if (alphabet.includes(currentCharacter) || alphabet.includes(currentCharacter.toUpperCase())) {
+        let currentCharacter = text[c].toUpperCase();
+        //if we can lookup the character in the return object, then it's an alphabet char and we add it
+        if (returnObj[currentCharacter] >= 0) {
           returnObj[currentCharacter.toUpperCase()]++;
         };
       };
       res.json(returnObj);
     } else {
       //handle if no text was sent
-      res.status(400).send('Bad request - must send a text key in the body');
+      res.status(400).send('Bad request - must send a JSON body with a key of "text"');
       }
   } else {
   //handle if no body was sent
