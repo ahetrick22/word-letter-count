@@ -2,16 +2,18 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const PORT = process.env.PORT || 5001;
+const cors = require('cors');
 
 //allow express app to correctly parse parameters from the body
-app.use(bodyParser.json());
+//set high payload limit to handle long strings
+app.use(bodyParser.json({limit: '50mb'}));
 app.use(
   bodyParser.urlencoded({
-    extended: true
+    limit: '50mb', extended: true
   })
 );
 
-
+app.use(cors());
 
 //receives a JSON payload in the request body with key 'paragraph' and a string value of 2+ sentences, 
 //returns JSON with key 'sentences' and an array value containing objects with text and wordCount properties
