@@ -3,6 +3,8 @@ const app = express();
 const bodyParser = require('body-parser');
 const PORT = process.env.PORT || 5001;
 const cors = require('cors');
+const fetch = require('node-fetch');
+
 
 //allow express app to correctly parse parameters from the body
 //set high payload limit to handle long strings
@@ -105,6 +107,15 @@ app.post('/total_letter_count', (req, res) => {
   res.status(400).send('Body is required');
   }
 })
+
+app.get('/fulltext/:id', async (req,res) => {
+  await fetch(`http://corpus-db.org/api/id/${req.params.id}.0/fulltext`)
+  .then(apiRes => apiRes.json())
+  .then(data => {
+    data[0].text = data[0].text.replace(/(\r\n|\n|\r)/gm, "");
+    res.json(data);
+  });
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

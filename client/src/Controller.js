@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
-import Viz from './Viz'
-import VizNoHooks from './VizNoHooks';
-import { bookStr } from './data/heart_of_darkness';
+import LetterCountViz from './LetterCountViz';
 
 export default class Controller extends Component {
   state = {
-    selectedBook: 'heartOfDarkness',
     currentData: null
 	}
 
   componentDidMount = async () => {
-    const bodyToSend = JSON.stringify({"text": bookStr});
+    let bookText = '';
+    await fetch(`/fulltext/${this.props.match.params.id}`)
+      .then(res => res.json())
+      .then(data => bookText = data[0].text);
+
+    const bodyToSend = await JSON.stringify({"text": bookText});
     await fetch('/total_letter_count', {
       method: 'POST', 
       body: bodyToSend,
@@ -18,7 +20,6 @@ export default class Controller extends Component {
     }).then(data =>
       data.json())
     .then(jsonData => {
-      console.log(jsonData);
       this.setState({currentData: jsonData});
     })
   }
@@ -26,10 +27,9 @@ export default class Controller extends Component {
   render() {
     return(
       <div className="controller">
-      {this.state.currentData ? <VizNoHooks data={this.state.currentData} /> : <></>}
+      {this.state.currentData ? <LetterCountViz data={this.state.currentData} /> : <></>}
       </div>
 
     )
   }
 }
-// { this.state.toDraw.length ? <Viz data={bookStr}/> : null}
