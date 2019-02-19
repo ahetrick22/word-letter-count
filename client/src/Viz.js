@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
 import * as d3 from 'd3';
 
-const Viz = (props) => {
+const Viz = ({data}) => {
   useEffect(() => {
    d3.select('.viz > *').remove();
-   draw(props)
+   draw(data)
  }, [props.shapes.length])
   return <div className="viz" />
 }
 
-const draw = (props) => {
+const draw = data => {
     const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     const h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     d3.select('.viz').append('svg')
@@ -17,30 +17,34 @@ const draw = (props) => {
       .attr('width', w)
       .attr('id', 'svg-viz')
 
-    const bubbles = props.shapes
-    const max = d3.max(bubbles)
-    const radiusScale = d3.scaleSqrt().domain([0, max]).range([0, max])
+      // X Label
+      g.append("text")
+      .attr("y", height + 50)
+      .attr("x", width / 2)
+      .attr("font-size", "20px")
+      .attr("text-anchor", "middle")
+      .text("Month");
 
-    const simulation = d3.forceSimulation()
-      .force('x', d3.forceX(w/3).strength(0.05))
-      .force('y', d3.forceY(h/3).strength(0.05))
-      .force('charge', d3.forceManyBody().strength(-1300))
-      .force('collide', d3.forceCollide(d => radiusScale(d.number)+1))
+      // Y Label
+      g.append("text")
+      .attr("y", -60)
+      .attr("x", -(height / 2))
+      .attr("font-size", "20px")
+      .attr("text-anchor", "middle")
+      .attr("transform", "rotate(-90)")
+      .text("Revenue");
 
-  const circles = d3.select('#svg-viz').selectAll('circle')
-    .data(props.shapes)
-    .enter()
-    .append('svg:circle')
-    .attr('r', d => d.width/2+"px")
-    .style('fill', (d) => d.color ? d.color : 'purple')
-
-  simulation.nodes(props.shapes)
-  .on('tick', ticked)
+    // Bars
+    var rects = g.selectAll("rect")
+    .data(data)
+    
+    rects.enter()
+    .append("rect")
+        .attr("y", function(d){ return y(d.revenue); })
+        .attr("x", function(d){ return x(d.month) })
+        .attr("height", function(d){ return height - y(d.revenue); })
+        .attr("width", x.bandwidth)
+        .attr("fill", "blue");
   
-  function ticked() {
-      circles
-      .attr('cx', d => d.x)
-      .attr('cy', d => d.y)
-    }
   }
 export default Viz

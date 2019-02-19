@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import Viz from './Viz.js'
+import Viz from './Viz'
+import VizNoHooks from './VizNoHooks';
 import { bookStr } from './data/heart_of_darkness';
 
 export default class Controller extends Component {
@@ -25,7 +26,7 @@ export default class Controller extends Component {
   render() {
     return(
       <div className="controller">
-      {this.state.currentData ? this.state.currentData["A"] : <></>}
+      {this.state.currentData ? <VizNoHooks data={this.state.currentData} /> : <></>}
       </div>
 
     )
